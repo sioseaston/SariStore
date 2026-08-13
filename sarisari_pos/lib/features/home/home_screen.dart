@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../data/local/daos/product_dao.dart';
+import '../../data/models/license_token.dart';
 import '../../state/license_provider.dart';
 
 class HomeScreen extends StatelessWidget {

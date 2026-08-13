@@ -30,12 +30,6 @@ build/
 *.ipr
 *.iws
 .flutter/
-android/
-ios/
-linux/
-macos/
-windows/
-web/
 test/coverage/
 
 # ---- OS / editors ----

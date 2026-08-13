@@ -1,3 +1,5 @@
+import 'product.dart';
+
 enum PaymentType { cash, credit, partial }
 
 enum TransactionStatus { completed, voided, settled, pendingCredit }
