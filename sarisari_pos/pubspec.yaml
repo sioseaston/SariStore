@@ -1,0 +1,58 @@
+name: sarisari_pos
+description: Offline-first POS and inventory app for sari-sari stores.
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+  flutter: '>=3.19.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Local database (offline-first source of truth)
+  sqflite: ^2.3.3
+  path: ^1.9.0
+
+  # IDs
+  uuid: ^4.4.0
+
+  # QR / barcode scanning via device camera
+  mobile_scanner: ^5.1.1
+
+  # QR code rendering (for store-generated product stickers)
+  qr_flutter: ^4.1.0
+
+  # State management
+  provider: ^6.1.2
+
+  # Networking (license check-in, sync)
+  http: ^1.2.1
+  connectivity_plus: ^6.0.3
+
+  # License token signature verification (HMAC)
+  crypto: ^3.0.3
+
+  # Bluetooth thermal printer (receipt printing)
+  # blue_thermal_printer: ^1.2.3
+  # esc_pos_utils_plus: ^2.0.4
+
+  # Local notifications (low-stock alerts)
+  flutter_local_notifications: ^17.2.1
+
+  # Icons
+  cupertino_icons: ^1.0.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  sqflite_common_ffi: ^2.3.3  # for running DB tests on desktop/CI, not device
+
+flutter:
+  uses-material-design: true
+
+  # assets:
+  #   - assets/images/
+  #   - assets/icons/
