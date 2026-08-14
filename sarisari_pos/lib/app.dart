@@ -25,7 +25,7 @@ import 'state/cart_provider.dart';
 import 'state/license_provider.dart';
 
 // Point this at your deployed sarisari_admin instance.
-const _licenseApiBaseUrl = 'https://your-admin-domain.example.com';
+const _licenseApiBaseUrl = 'http://10.0.2.2:3000';
 
 class SariSariPosApp extends StatelessWidget {
   const SariSariPosApp({super.key});

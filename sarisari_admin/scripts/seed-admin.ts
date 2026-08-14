@@ -1,13 +1,16 @@
 /**
  * One-time script to create the first admin login.
  * Run with: npx tsx scripts/seed-admin.ts you@example.com yourpassword
- *
- * (Add "tsx" as a devDependency, or run via `node -r ts-node/register` —
- * any TS runner works since this has no framework dependencies beyond
- * @supabase/supabase-js and bcryptjs, both already in package.json.)
  */
+import { config } from 'dotenv';
+import { resolve } from 'path';
 import { createClient } from '@supabase/supabase-js';
 import bcrypt from 'bcryptjs';
+
+// This script runs standalone via tsx, outside Next.js's dev server, so
+// .env.local is NOT loaded automatically the way it is for `next dev`.
+// Load it explicitly here.
+config({ path: resolve(process.cwd(), '.env.local') });
 
 async function main() {
   const [, , email, password] = process.argv;
