@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback, use } from 'react';
 import Link from 'next/link';
 import type { StoreRow } from '@/lib/db';
 import StoreStatusBadge from '@/components/StoreStatusBadge';
-import PaymentForm from '@/components/PaymentForm';
+import ExtendForm from '@/components/ExtendForm';
 
 interface PaymentRow {
   id: string;
@@ -53,6 +53,25 @@ export default function StoreDetailPage({ params }: { params: Promise<{ storeId:
     if (!res.ok) {
       const body = await res.json().catch(() => ({}));
       setActionError(body.message ?? `Failed to ${action} store`);
+      return;
+    }
+    load();
+  }
+
+  async function convertToLifetime() {
+    const confirmed = window.confirm(
+      'Convert this store to a permanent (lifetime) license? This cannot be reverted from this screen.',
+    );
+    if (!confirmed) return;
+    setActionLoading('convert-lifetime');
+    setActionError(null);
+
+    const res = await fetch(`/api/stores/${storeId}/convert-lifetime`, { method: 'POST' });
+    setActionLoading(null);
+
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      setActionError(body.message ?? 'Failed to convert store to lifetime');
       return;
     }
     load();
@@ -132,19 +151,27 @@ export default function StoreDetailPage({ params }: { params: Promise<{ storeId:
               onClick={() => runAction('delete')}
             />
           )}
+          {store.license_type === 'subscription' && (
+            <ActionButton
+              label="Convert to Permanent"
+              color="teal"
+              loading={actionLoading === 'convert-lifetime'}
+              onClick={convertToLifetime}
+            />
+          )}
         </div>
         {actionError && <p className="text-sm text-red-600 mt-3">{actionError}</p>}
       </section>
 
       <section className="bg-white border border-gray-200 rounded-lg p-5 mb-6">
-        <h2 className="text-sm font-semibold mb-3">Record a Payment</h2>
-        <PaymentForm storeId={store.id} onRecorded={load} />
+        <h2 className="text-sm font-semibold mb-3">Extend License</h2>
+        <ExtendForm storeId={store.id} cycleDays={store.cycle_days} onExtended={load} />
       </section>
 
       <section className="bg-white border border-gray-200 rounded-lg p-5">
-        <h2 className="text-sm font-semibold mb-3">Payment History</h2>
+        <h2 className="text-sm font-semibold mb-3">License History</h2>
         {payments.length === 0 ? (
-          <p className="text-sm text-gray-500">No payments recorded yet.</p>
+          <p className="text-sm text-gray-500">No license activity recorded yet.</p>
         ) : (
           <table className="w-full text-sm">
             <thead className="text-left text-gray-500">
@@ -160,7 +187,7 @@ export default function StoreDetailPage({ params }: { params: Promise<{ storeId:
                 <tr key={p.id}>
                   <td className="py-2">{new Date(p.payment_date).toLocaleString()}</td>
                   <td className="py-2">₱{p.amount.toLocaleString()}</td>
-                  <td className="py-2 capitalize">{p.method}</td>
+                  <td className="py-2">{methodLabel(p.method)}</td>
                   <td className="py-2 text-gray-500">{p.notes ?? '—'}</td>
                 </tr>
               ))}
@@ -181,11 +208,23 @@ function InfoCard({ label, value, capitalize }: { label: string; value: string; 
   );
 }
 
+function methodLabel(method: string): string {
+  switch (method) {
+    case 'extension':
+      return 'Extension';
+    case 'lifetime_upgrade':
+      return 'Lifetime Upgrade';
+    default:
+      return method.charAt(0).toUpperCase() + method.slice(1);
+  }
+}
+
 const ACTION_COLORS: Record<string, string> = {
   green: 'bg-green-600 hover:bg-green-700',
   amber: 'bg-amber-500 hover:bg-amber-600',
   red: 'bg-red-600 hover:bg-red-700',
   gray: 'bg-gray-500 hover:bg-gray-600',
+  teal: 'bg-teal-600 hover:bg-teal-700',
 };
 
 function ActionButton({

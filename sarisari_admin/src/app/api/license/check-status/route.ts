@@ -69,10 +69,22 @@ export async function POST(req: NextRequest) {
 
   // status === 'paused' still issues a fresh token (soft warning shown
   // client-side), unlike 'disabled' which hard-blocks above.
+  //
+  // Subscription expiry honors the store's due_date (set by the admin's
+  // "Extend License" action) so extensions accumulate on the device instead
+  // of always resetting to "now + cycle_days". Falls back to cycle_days from
+  // now when there's no future due_date.
+  let expiresAt: Date | null = null;
+  if (store.license_type === 'subscription') {
+    const dueDate = store.due_date ? new Date(`${store.due_date}T23:59:59.999`) : null;
+    expiresAt = dueDate && dueDate.getTime() > Date.now() ? dueDate : null;
+  }
+
   const { token_json } = issueToken({
     storeId: store.id,
     licenseType: store.license_type,
     cycleDays: store.cycle_days,
+    expiresAt,
   });
 
   await db.from('stores').update({ last_login_check: new Date().toISOString() }).eq('id', store.id);

@@ -40,13 +40,14 @@ export function issueToken(params: {
   storeId: string;
   licenseType: LicenseType;
   cycleDays?: number; // required for subscription
+  expiresAt?: Date | null; // explicit expiry override (e.g. from store due_date)
 }): { token_json: Record<string, unknown> } {
   const issuedAt = new Date();
   let expiresAt: Date | null = null;
 
   if (params.licenseType === 'subscription') {
     const days = params.cycleDays ?? 30;
-    expiresAt = new Date(issuedAt.getTime() + days * 24 * 60 * 60 * 1000);
+    expiresAt = params.expiresAt ?? new Date(issuedAt.getTime() + days * 24 * 60 * 60 * 1000);
   }
 
   const payload: LicenseTokenPayload = {
