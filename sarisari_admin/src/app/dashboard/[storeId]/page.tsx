@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, use } from 'react';
 import Link from 'next/link';
 import type { StoreRow } from '@/lib/db';
 import StoreStatusBadge from '@/components/StoreStatusBadge';
@@ -14,7 +14,8 @@ interface PaymentRow {
   payment_date: string;
 }
 
-export default function StoreDetailPage({ params }: { params: { storeId: string } }) {
+export default function StoreDetailPage({ params }: { params: Promise<{ storeId: string }> }) {
+  const { storeId } = use(params);
   const [store, setStore] = useState<StoreRow | null>(null);
   const [payments, setPayments] = useState<PaymentRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -23,14 +24,14 @@ export default function StoreDetailPage({ params }: { params: { storeId: string 
 
   const load = useCallback(async () => {
     setLoading(true);
-    const res = await fetch(`/api/stores/${params.storeId}`);
+    const res = await fetch(`/api/stores/${storeId}`);
     if (res.ok) {
       const body = await res.json();
       setStore(body.store);
       setPayments(body.payments);
     }
     setLoading(false);
-  }, [params.storeId]);
+  }, [storeId]);
 
   useEffect(() => {
     load();
@@ -46,7 +47,7 @@ export default function StoreDetailPage({ params }: { params: { storeId: string 
     setActionLoading(action);
     setActionError(null);
 
-    const res = await fetch(`/api/stores/${params.storeId}/${action}`, { method: 'POST' });
+    const res = await fetch(`/api/stores/${storeId}/${action}`, { method: 'POST' });
     setActionLoading(null);
 
     if (!res.ok) {

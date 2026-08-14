@@ -8,6 +8,7 @@ import { applyStatusChange } from '../_statusHelper';
  * cycle; only if/when a lifetime-store device happens to reconnect,
  * per the lifetime enforcement tradeoff described in the system design).
  */
-export async function POST(_req: NextRequest, { params }: { params: { storeId: string } }) {
-  return applyStatusChange(params.storeId, 'disabled');
+export async function POST(_req: NextRequest, { params }: { params: Promise<{ storeId: string }> }) {
+  const { storeId } = await params;
+  return applyStatusChange(storeId, 'disabled');
 }

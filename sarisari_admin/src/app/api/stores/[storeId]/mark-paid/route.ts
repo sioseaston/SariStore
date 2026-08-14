@@ -10,7 +10,8 @@ import { db, StoreRow } from '@/lib/db';
  * The store itself doesn't unlock until it next calls /check-status —
  * this route only updates the source of truth on the server.
  */
-export async function POST(req: NextRequest, { params }: { params: { storeId: string } }) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ storeId: string }> }) {
+  const { storeId } = await params;
   const body = await req.json().catch(() => null);
   const amount = body?.amount as number | undefined;
   const method = (body?.method as string | undefined) ?? 'cash';
@@ -26,7 +27,7 @@ export async function POST(req: NextRequest, { params }: { params: { storeId: st
   const { data: store, error } = await db
     .from('stores')
     .select('*')
-    .eq('id', params.storeId)
+    .eq('id', storeId)
     .single<StoreRow>();
 
   if (error || !store) {

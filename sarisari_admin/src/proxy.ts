@@ -7,7 +7,7 @@ import { verifySessionToken, SESSION_COOKIE_NAME } from '@/lib/auth';
 /// differently (license_key / device_id, not an admin session).
 const PROTECTED_PREFIXES = ['/dashboard', '/api/stores'];
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   const needsAuth = PROTECTED_PREFIXES.some((p) => pathname.startsWith(p));

@@ -8,6 +8,7 @@ import { applyStatusChange } from '../_statusHelper';
  * the system design). Typically used for "payment is a few days late,
  * please resolve soon" rather than a hard cutoff.
  */
-export async function POST(_req: NextRequest, { params }: { params: { storeId: string } }) {
-  return applyStatusChange(params.storeId, 'paused');
+export async function POST(_req: NextRequest, { params }: { params: Promise<{ storeId: string }> }) {
+  const { storeId } = await params;
+  return applyStatusChange(storeId, 'paused');
 }

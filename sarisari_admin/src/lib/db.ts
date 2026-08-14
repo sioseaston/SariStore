@@ -17,6 +17,8 @@ export const db = createClient(supabaseUrl, supabaseServiceKey, {
 export interface StoreRow {
   id: string;
   store_name: string;
+  owner_name: string | null;
+  contact_number: string | null;
   license_key: string;
   license_type: 'lifetime' | 'subscription';
   status: 'active' | 'paused' | 'disabled' | 'deleted';
